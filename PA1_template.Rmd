@@ -12,6 +12,8 @@ activity <- read.csv(file = "activity.csv")
 ```
 
 ## What is mean total number of steps taken per day?
+
+```{r}
 library(dplyr)
 activity2 <- subset(activity, !is.na(steps))
 by_date <- group_by(activity2, date)
@@ -19,27 +21,31 @@ total_steps_per_day <- summarise(by_date, total_steps = sum(steps))
 hist(total_steps_per_day$total_steps, col = "blue")
 mean(total_steps_per_day$total_steps)
 median(total_steps_per_day$total_steps)
+```
 
 ## What is the average daily activity pattern?
+```{r}
 by_interval <- group_by(activity2, interval)
 mean_steps_per_interval <- summaries(by_interval, average_steps = mean(steps))
 plot(average_steps ~ interval, mean_steps_per_interval, type="l")
 subset(mean_steps_per_interval, average_steps == max(average_steps))[1]
+```
 
 ## Imputing missing values
-sum(is.na(activity$steps))
-
 ```{r}
+sum(is.na(activity$steps))
 data <- cbind(activity, avg_steps = mean_steps_per_interval$average_steps)
 for (i in 1:length(data$steps)) {if(is.na(data[i, 1])) data[i, 1] <- data[i, 4]}
 filled_activity <- select(data, 1:3)
-```
-
 by_date2 <- group_by(filled_activity, date)
 total_steps_per_day2 <- summarise(by_date2, total_steps = sum(steps))
 hist(total_steps_per_day2$total_steps, col = "blue")
 mean(total_steps_per_day2$total_steps)
 median(total_steps_per_day2$total_steps)
-## Are there differences in activity patterns between weekdays and weekends?
-data <- mutate(filled_activity, day_type = weekdays(as.Date(filled_activity$date)) == c("Saturday", "Sunday"))
+```
 
+
+## Are there differences in activity patterns between weekdays and weekends?
+```{r}
+data <- mutate(filled_activity, day_type = weekdays(as.Date(filled_activity$date)) == c("Saturday", "Sunday"))
+```
